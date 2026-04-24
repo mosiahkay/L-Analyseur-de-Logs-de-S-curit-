@@ -23,28 +23,32 @@ if user not in tentative:
     tentative[user] = 0 
 tentative[user] += 1 #maintenant on incremente le compteur de tentative pour l'utilisateur "admin"
 
-for log in logs_bruts:
-    """On va parcourir chaque log et extraire le nom de l'utilisateur
-    on commence par definir un motif de regex pour extraire le nom de l'utilisateur"""
-    match = re.search(r"User: (\w+)", log)
-    if match and "LOGIN_FAILED" in log: #si on trouve une correspondance et que l'action est un echec de connexion:
-        user = match.group(1) #on extrait le nom de l'utilisateur le group(1) recupere ce qui est entre les parenthese dans le motif regex
-        compteur_erreurs[user] += 1 #on incremente le compteur d'erreurs pour cet utilisateur 
+def detecter_instrusions(logs_bruts, seuil):
 
+    seuil = 2
 
-# Affichage du nombre d'erreurs de connexion pour chaque utilisateur
+    for log in logs_bruts:
+        """On va parcourir chaque log et extraire le nom de l'utilisateur
+        on commence par definir un motif de regex pour extraire le nom de l'utilisateur"""
+        match = re.search(r"User: (\w+)", log)
+        if match and "LOGIN_FAILED" in log: #si on trouve une correspondance et que l'action est un echec de connexion:
+            user = match.group(1) #on extrait le nom de l'utilisateur le group(1) recupere ce qui est entre les parenthese dans le motif regex
+            compteur_erreurs[user] += 1 #on incremente le compteur d'erreurs pour cet utilisateur 
 
+    # Affichage du nombre d'erreurs de connexion pour chaque utilisateur
 
-for user, erreurs in compteur_erreurs.items():
-    print(f"Utilisateur: {user}, Erreurs de connexion: {erreurs}")
-    if user not in compteur_erreurs:
-        compteur_erreurs[user] = 0 #on initialise le compteur d'erreurs pour cet utilisateur à 0
+    for user, erreurs in compteur_erreurs.items():
+        print(f"Utilisateur: {user}, Erreurs de connexion: {erreurs}")
+        if user not in compteur_erreurs:
+            compteur_erreurs[user] = 0 #on initialise le compteur d'erreurs pour cet utilisateur à 0
 
-suspects = []
+    suspects = []
 
-for user, erreurs in compteur_erreurs.items():
-    if erreurs > 2: 
-        suspects.append(user)
+    for user, erreurs in compteur_erreurs.items():
+        if erreurs > seuil: 
+            suspects.append(user)
+
+        return {"utilisateur": {user}, "Erreurs de connexion": {erreurs}}
         
 with open ('suspects.json', 'w') as fichier:
     json.dump(suspects, fichier)
