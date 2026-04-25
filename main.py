@@ -2,21 +2,13 @@ import re
 import json
 from collections import defaultdict
 
-def detecter_instrusions(logs_bruts, suspects, seuil):
+
+def detecter_instrusions(logs_bruts, seuil):
 
     compteur_erreurs = defaultdict(int)
     suspects = []
-    seuil = 2
 
     """on va commencer a par verifier si la cle existe"""
-
-    tentative = {}
-
-    user = "admin"
-    if user not in tentative:
-        """on initialise a 0 s'il n'existe pas"""
-        tentative[user] = 0 
-    tentative[user] += 1 #maintenant on incremente le compteur de tentative pour l'utilisateur "admin"
 
     for log in logs_bruts:
         """On va parcourir chaque log et extraire le nom de l'utilisateur
@@ -31,14 +23,10 @@ def detecter_instrusions(logs_bruts, suspects, seuil):
 
     for user, erreurs in compteur_erreurs.items():
         print(f"Utilisateur: {user}, Erreurs de connexion: {erreurs}")
-        if user not in compteur_erreurs:
-           compteur_erreurs[user] = 0 #on initialise le compteur d'erreurs pour cet utilisateur à 0
-
-        for user, erreurs in compteur_erreurs.items():
-            if erreurs > seuil: 
-                suspects.append(user)
+        if erreurs > seuil: 
+            suspects.append(user)
     with open ('suspects.json', 'w') as fichier:
-        json.dump(suspects, fichier)
+        json.dump(suspects, fichier, indent = 4)
 
     return suspects
 
