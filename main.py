@@ -34,6 +34,7 @@ def analyse_securite_totale(logs_bruts, seuil_compte = 3, seuil_vitesse = 10):
     Elle prend en entrée une liste de logs, un seuil pour le nombre d'erreurs de connexion et un seuil pour la vitesse des tentatives de connexion.
     Elle retourne une liste d'utilisateurs suspects qui ont dépassé les seuils définis."""
     compteur_global = defaultdict(int)
+    historique_temps = defaultdict(list)
     derniers_temps = {}
 
     resultats = {
@@ -47,14 +48,24 @@ def analyse_securite_totale(logs_bruts, seuil_compte = 3, seuil_vitesse = 10):
             date_str, user = match.groups()
             temps_acteul = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
             compteur_global[user] += 1
-            if compteur_global[user] == seuil_compte:
+            historique_temps[user].append(temps_acteul)
+            # Détection brute force
+            if (compteur_global[user] >= seuil_compte and
+                user not in resultats["force_brute"]):
+
                 resultats["force_brute"].append(user)
-                if user in derniers_temps:
-                    temps_precedent = derniers_temps[user]
-                    diff = (temps_acteul - temps_precedent).total_seconds()
-                    if diff < seuil_vitesse and user not in resultats["attaque_rapides"]:
-                        resultats["attaque_rapides"].append(user)
-            derniers_temps[user] = temps_acteul
+               # Détection vitesse
+            if len(historique_temps[user]) >= 2:
+
+                diff = (
+                    historique_temps[user][-1] -
+                    historique_temps[user][-2]
+                ).total_seconds()
+
+                if (diff < seuil_vitesse and
+                    user not in resultats["attaque_rapides"]):
+
+                    resultats["attaque_rapides"].append(user)
     with open('resultats_securite.json', 'w') as fichier:
         json.dump(resultats, fichier, indent=4)
     return resultats
