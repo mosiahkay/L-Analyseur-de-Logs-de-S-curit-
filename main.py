@@ -35,7 +35,6 @@ def analyse_securite_totale(logs_bruts, seuil_compte = 3, seuil_vitesse = 10):
     Elle retourne une liste d'utilisateurs suspects qui ont dépassé les seuils définis."""
     compteur_global = defaultdict(int)
     historique_temps = defaultdict(list)
-    derniers_temps = {}
 
     resultats = {
         "force_brute": [],
@@ -79,8 +78,8 @@ logs_bruts = [
 ]
 
 bilan = analyse_securite_totale(logs_bruts)
-print(f"Voici le bilan: {bilan}")
 listes_suspects = detecter_instrusions(logs_bruts, 2)
 
 if listes_suspects:
    print(f"ALERTE Tentatives de force brutes detecter pour: {listes_suspects}")
+   print(f"Voici le bilan: {bilan}")
