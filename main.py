@@ -2,7 +2,7 @@ import re
 import json
 from collections import defaultdict
 
-def detecter_instrusions(logs_bruts, seuil):
+def detecter_instrusions(logs_bruts, suspects, seuil):
 
     compteur_erreurs = defaultdict(int)
     suspects = []
