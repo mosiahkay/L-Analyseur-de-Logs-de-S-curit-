@@ -1,4 +1,8 @@
 {
-    "force_brute": [],
-    "attaque_rapides": []
+    "force_brute": [
+        "admin"
+    ],
+    "attaque_rapides": [
+        "admin"
+    ]
 }

@@ -22,7 +22,7 @@ def detecter_instrusions(logs_bruts, seuil):
 
     for user, erreurs in compteur_erreurs.items():
         print(f"Utilisateur: {user}, Erreurs de connexion: {erreurs}")
-        if erreurs > seuil: 
+        if erreurs >= seuil: 
             suspects.append(user)
     with open ('suspects.json', 'w') as fichier:
         json.dump(suspects, fichier, indent = 4)
@@ -60,7 +60,9 @@ def analyse_securite_totale(logs_bruts, seuil_compte = 3, seuil_vitesse = 10):
     return resultats
 logs_bruts = [
     "2024-05-20 10:00:00 | User: admin | Action: LOGIN_FAILED",
-    "2024-05-20 10:00:05 | User: admin | Action: LOGIN_FAILED",  # 5s -> ALERTE
+    "2024-05-20 10:00:05 | User: admin | Action: LOGIN_FAILED",
+    "2024-05-20 10:00:10 | User: admin | Action: LOGIN_FAILED",
+    "2024-05-20 10:00:15 | User: admin | Action: LOGIN_FAILED",  # 5s -> ALERTE
     "2024-05-20 10:00:20 | User: hacker | Action: LOGIN_FAILED",
     "2024-05-20 10:00:22 | User: hacker | Action: LOGIN_FAILED"
 ]
